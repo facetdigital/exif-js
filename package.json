@@ -1,6 +1,6 @@
 {
   "name": "exif-js-facetdigital",
-  "version": "2.3.3",
+  "version": "2.3.1",
   "description": "JavaScript library for reading EXIF image metadata",
   "main": "exif.js",
   "types": "exif.d.ts",
