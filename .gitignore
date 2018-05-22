@@ -1,6 +1,8 @@
 .*.swp
+*.tgz
 .DS_Store
 /.vimproject
 /Session.vim
 /node_modules
 .vagrant/
+.idea/
