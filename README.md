@@ -34,14 +34,14 @@ Start with calling the `EXIF.getData` function. You pass it an image as a parame
 As a second parameter you specify a callback function. In the callback function you should use `this` to access the image with the aforementioned metadata you can then use as you want.
 That image now has an extra `exifdata` property which is a Javascript object with the EXIF metadata. You can access it's properties to get data like the *image caption*, the *date a photo was taken* or it's *orientation*.
 
-You can get all tages with `EXIF.getTag`. Or get a single tag with `EXIF.getTag`, where you specify the tag as the second parameter.
+You can get all tages with `EXIF.getAllTags`. Or get a single tag with `EXIF.getTag`, where you specify the tag as the second parameter.
 The tag names to use are listed in `EXIF.Tags` in `exif.js`.
 
 **Important**: Note that you have to wait for the image to be completely loaded, before calling `getData` or any other function. It will silently fail otherwise.
 You can implement this wait, by running your exif-extracting logic on the `window.onLoad` function. Or on an image's own `onLoad` function.
 For jQuery users please note that you can NOT (reliably) use jQuery's `ready` event for this. Because it fires before images are loaded.
-You could use $(window).load() instead of $(document.ready() (please note that `exif-js has NO dependency on jQuery or any other external library). 
- 
+You could use $(window).load() instead of $(document.ready() (please note that `exif-js has NO dependency on jQuery or any other external library).
+
 **JavaScript**:
 ```javascript
 window.onload=getExif;
@@ -76,7 +76,7 @@ function getExif() {
 
 Note there are also alternate tags, such the `EXIF.TiffTags`. See the source code for the full definition and use.
 You can also get back a string with all the EXIF information in the image pretty printed by using `EXIF.pretty`.
-Check the included [index.html](/exif-js/exif-js/blob/master/index.html).
+Check the included [index.html](index.html).
 
 **XMP**
 Since issue #53 was merged also extracting of XMP data is supported. To not slow down this is optional, and you need to call `EXIF.enableXmp();` before using `..getDatat()`.
@@ -84,7 +84,7 @@ Since issue #53 was merged also extracting of XMP data is supported. To not slow
 Please refer to the [source code](exif.js) for more advanced usages such as getting image data from a [File/Blob](https://developer.mozilla.org/en/docs/Web/API/Blob) object (`EXIF.readFromBinaryFile`).
 
 ## Contributions
-This is an [open source project](LICENSE.md). Please contribute by forking this repo and issueing a pull request. The project has had notable contributions already, like reading ITPC data.
+This is an [open source project](LICENSE.md). Please contribute by forking this repo and issuing a pull request. The project has had notable contributions already, like reading ITPC data.
 
-You can also contribute by [filing bugs or new features please issue](/exif-js/issues).
+You can also contribute by [filing bugs or new features please issue](https://github.com/exif-js/exif-js/issues).
 Or improve the documentation. Please update this README when you do a pull request of proposed changes in base functionality.

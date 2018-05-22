@@ -162,7 +162,8 @@
         0x001B : "GPSProcessingMethod",
         0x001C : "GPSAreaInformation",
         0x001D : "GPSDateStamp",
-        0x001E : "GPSDifferential"
+        0x001E : "GPSDifferential",
+        0x001F : "GPSHPositioningError"
     };
 
      // EXIF 2.3 Spec
@@ -372,8 +373,8 @@
             var iptcdata = findIPTCinJPEG(binFile);
             img.iptcdata = iptcdata || {};
             if (EXIF.isXmpEnabled) {
-               var xmpdata= findXMPinJPEG(binFile);
-               img.xmpdata = xmpdata || {};               
+               var xmpdata = findXMPinJPEG(binFile);
+               img.xmpdata = xmpdata || {};
             }
             if (callback) {
                 callback.call(img);
@@ -509,11 +510,13 @@
             offset++;
 
         }
-
     }
+    // Add return fixture id - krini
+    // https://github.com/exif-js/exif-js/pull/127
     var IptcFieldMap = {
         0x78 : 'caption',
         0x6E : 'credit',
+        0x16 : 'fixtureID',
         0x19 : 'keywords',
         0x37 : 'dateCreated',
         0x50 : 'byline',
@@ -628,18 +631,18 @@
                 if (numValues == 1) {
                     numerator = file.getUint32(valueOffset, !bigEnd);
                     denominator = file.getUint32(valueOffset+4, !bigEnd);
-                    val = new Number(numerator / denominator);
-                    val.numerator = numerator;
-                    val.denominator = denominator;
+                    // Changes to storing of values for rational value types - emilygdavis
+                    // https://github.com/exif-js/exif-js/pull/126
+                    val = { value: numerator / denominator, numerator: numerator, denominator: denominator };
                     return val;
                 } else {
                     vals = [];
                     for (n=0;n<numValues;n++) {
                         numerator = file.getUint32(valueOffset + 8*n, !bigEnd);
                         denominator = file.getUint32(valueOffset+4 + 8*n, !bigEnd);
-                        vals[n] = new Number(numerator / denominator);
-                        vals[n].numerator = numerator;
-                        vals[n].denominator = denominator;
+                        // Changes to storing of values for rational value types - emilygdavis
+                        // https://github.com/exif-js/exif-js/pull/126
+                        vals[n] = { value: numerator / denominator, numerator: numerator, denominator: denominator };
                     }
                     return vals;
                 }
@@ -823,10 +826,14 @@
             for (tag in gpsData) {
                 switch (tag) {
                     case "GPSVersionID" :
-                        gpsData[tag] = gpsData[tag][0] +
-                            "." + gpsData[tag][1] +
-                            "." + gpsData[tag][2] +
-                            "." + gpsData[tag][3];
+                        if (gpsData[tag]) {
+                          // Skip broken GPSVersionID - iggfisk
+                          // https://github.com/exif-js/exif-js/pull/161
+                          gpsData[tag] = gpsData[tag][0] +
+                              "." + gpsData[tag][1] +
+                              "." + gpsData[tag][2] +
+                              "." + gpsData[tag][3];
+                        }
                         break;
                 }
                 tags[tag] = gpsData[tag];
@@ -892,7 +899,7 @@
 
     function xml2json(xml) {
         var json = {};
-      
+
         if (xml.nodeType == 1) { // element node
           if (xml.attributes.length > 0) {
             json['@attributes'] = {};
@@ -904,7 +911,7 @@
         } else if (xml.nodeType == 3) { // text node
           return xml.nodeValue;
         }
-      
+
         // deal with children
         if (xml.hasChildNodes()) {
           for(var i = 0; i < xml.childNodes.length; i++) {
@@ -922,7 +929,7 @@
             }
           }
         }
-        
+
         return json;
     }
 
@@ -993,7 +1000,7 @@
         if (!imageHasData(img)) return;
         return img.exifdata[tag];
     }
-    
+
     EXIF.getIptcTag = function(img, tag) {
         if (!imageHasData(img)) return;
         return img.iptcdata[tag];
@@ -1011,7 +1018,7 @@
         }
         return tags;
     }
-    
+
     EXIF.getAllIptcTags = function(img) {
         if (!imageHasData(img)) return {};
         var a,
@@ -1056,4 +1063,3 @@
         });
     }
 }.call(this));
-
