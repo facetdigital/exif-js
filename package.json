@@ -1,5 +1,5 @@
 {
-  "name": "exif-js-facetdigital",
+  "name": "exif-js-facet",
   "version": "2.3.1",
   "description": "JavaScript library for reading EXIF image metadata",
   "main": "exif.js",
